@@ -1,0 +1,27 @@
+[project]
+name = "spagettypy"
+version = "0.0.1"
+description = "SpagettyPy is Simple AST to UML visualizer"
+authors = [
+    {name = "Bolt Hold",email = "bolthold7507@gmail.com"}
+]
+license = {text = "MPL-2.0 license"}
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "typer (>=0.20.0,<0.21.0)",
+    "networkx (>=3.5,<4.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.1,<0.15.0)",
+    "mypy (>=1.18.2,<2.0.0)",
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)"
+]
