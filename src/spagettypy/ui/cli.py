@@ -4,20 +4,18 @@ from pathlib import Path
 from ..analyzer.graph import GraphX
 from ..analyzer.exporters.tree_exporter import TreeDirectoryExporter
 
-
-app = typer.Typer(help="SpagettyPy — Python AST → UML visualizer")
-
-
-
 __version__ = "0.1.0"
+app = typer.Typer(help=f"SpagettyPy — Python AST → UML visualizer {__version__}v")
+
+
 
 @app.command()
-def create():
-    print("Creating user: Hiro Hamada")
+def uml()-> None:
+    """Построить диаграмму"""
 
 @app.command()
 def tree(
-    path: str = typer.Option(".", help="Путь к проекту")
+    path: Path = typer.Option(".", help="Путь к проекту")
 ) -> None:
     """Показать дерево проекта или текущей дирректории"""
     base_path = path.resolve()
