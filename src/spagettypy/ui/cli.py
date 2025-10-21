@@ -5,26 +5,30 @@ from ..analyzer.graph import GraphX
 from ..analyzer.exporters.tree_exporter import TreeDirectoryExporter
 
 
-app = typer.Typer()
-path = Path(r"C:\Users\bolthold\Documents\Code\SpagettyPy")
-pythonchecker = FormatFileChecker(".py")
-giignore = GitignoreFileChecker(path)
-dirparse = DirectoryParser(checkers=[pythonchecker,giignore],base_path=path)
-tree_exp = TreeDirectoryExporter(path)
-graph = GraphX()
+app = typer.Typer(help="SpagettyPy — Python AST → UML visualizer")
+
 
 
 __version__ = "0.1.0"
 
+@app.command()
+def create():
+    print("Creating user: Hiro Hamada")
 
 @app.command()
-def tree() -> None:
-    ngraph = dirparse(graph=graph,context=path)
-    print(tree_exp(ngraph))
+def tree(
+    path: str = typer.Option(".", help="Путь к проекту")
+) -> None:
+    """Показать дерево проекта или текущей дирректории"""
+    base_path = path.resolve()
+    pythonchecker = FormatFileChecker(".py")
+    gitignore = GitignoreFileChecker(base_path)
+    dirparse = DirectoryParser(checkers=[pythonchecker, gitignore], base_path=base_path)
+    tree_exp = TreeDirectoryExporter(base_path)
+    graph = GraphX()
 
-def main() -> None:
-    app()
+    ngraph = dirparse(graph=graph, context=base_path)
+    typer.echo(tree_exp(ngraph))
 
 
-if __name__ == "__main__":
-    main()
+

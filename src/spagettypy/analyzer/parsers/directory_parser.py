@@ -127,10 +127,10 @@ class DirectoryParser:
             key = self._split_dirs(rel_dir)
             tree_map.setdefault(key, []).append(f)
 
-        # 2️⃣ Сортируем по глубине (корни первыми)
+        # Сортируем по глубине (корни первыми)
         sorted_keys = sorted(tree_map.keys(), key=len)
 
-        # 3️⃣ Добавляем в граф
+
         for key in sorted_keys:
             if not key:
                 parent_dir = DirectoryNode(Path("."))
@@ -139,11 +139,11 @@ class DirectoryParser:
                 current_dir = key[-1]
                 parent_dir = key[-2] if len(key) > 1 else DirectoryNode(Path("."))
 
-            # связь родителя и текущей папки
+
             if parent_dir != current_dir:
                 self.graph.add_edge(parent_dir, current_dir)
 
-            # файлы в этой папке
+    
             for f in tree_map[key]:
                 rel_file = self._rel(f.path / f"{f.name}{f.format}")
                 file_node = FileInfo(
@@ -152,7 +152,6 @@ class DirectoryParser:
                     path=self._rel(f.path),
                     is_exclude=f.is_exclude,
                 )
-                # 👉 только если файл не совпадает с директорией
                 if rel_file != self._rel(f.path):
                     self.graph.add_edge(current_dir, file_node)
 
