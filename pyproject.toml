@@ -10,9 +10,12 @@ readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "typer (>=0.20.0,<0.21.0)",
-    "networkx (>=3.5,<4.0)"
+    "networkx (>=3.5,<4.0)",
+    "pathspec (>=0.12.1,<0.13.0)",
+    "pygit2 (>=1.18.2,<2.0.0)"
 ]
 
+packages = [{ include = "spagettypy", from = "src" }]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -25,3 +28,6 @@ dev = [
     "pytest (>=8.4.2,<9.0.0)",
     "pytest-cov (>=7.0.0,<8.0.0)"
 ]
+
+[tool.poetry.scripts]
+spagetty = "spagettypy.ui.cli:app"
