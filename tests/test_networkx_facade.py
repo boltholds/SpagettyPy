@@ -1,4 +1,3 @@
-import pytest
 from spagettypy.analyzer.graph.networkx_facade import GraphX
 
 def test_graph_add_and_iter_nodes_edges():

@@ -1,19 +1,20 @@
 from __future__ import annotations
-from typing import Optional, Iterable, Any, List
+from typing import Optional, Iterable, List, Set
 import pygit2
+from pathspec import PathSpec
 from pathlib import Path
-from ..graph import GraphX
-from .interfaces import FileChecher, FileFinder
-from ..model import FileInfo, DirectoryNode
+from ..graph import GraphProto
+from .interfaces import FileChecherProto
+from ..model import Relation,FileInfo, DirectoryNode
 
 class GitFinder:
-    """Ищет папку гит репозитория в текущем каталоге и выще"""
+    """Ищет папку гит репозитория в текущем каталоге и выше"""
     def __init__(self) -> None:...
     
-    def __call__(self, property:  str ) -> Path:
+    def __call__(self, property:  str ) -> Optional[Path]:
         if isinstance(property, str):
             try:
-                return pygit2.discover_repository(property)
+                return Path(pygit2.discover_repository(property))
             except KeyError:
                 return None
 
@@ -25,7 +26,7 @@ class GitignoreFileChecker:
             start_path = str(start_path)
         # Ищем путь до .git/
         git_finder = GitFinder()
-        repo_path = git_finder(start_path)
+        repo_path = str(git_finder(start_path))
         if not repo_path:
             self.git_repo = None
             self.repo_root = None
@@ -65,7 +66,7 @@ class GitExcludeFileChecker:
         self.repo_root = Path(repo_path).parent  # корень репо
 
         # абсолютный путь до exclude файла
-        self.exclude_file = Path(repo_path) / "info" / "exclude"
+        self.exclude_file:Optional[Path] = Path(repo_path) / "info" / "exclude"
         if not self.exclude_file.exists():
             self.exclude_file = None
 
@@ -86,8 +87,11 @@ class GitExcludeFileChecker:
 class FormatFileChecker:
     """Проверяет входит ли формат в файла в поддерживаемые"""
     def __init__(self, format: str | Iterable[str]) -> None:
+        
+        self.support_format:Set[str] = set()
+        
         if isinstance(format ,str):
-            self.support_format = self._fix_suffix(format)
+            self.support_format.add(self._fix_suffix(format))
 
         else:
             self.support_format = set([self._fix_suffix(s) for s in format])
@@ -106,23 +110,34 @@ class FormatFileChecker:
         return False
 
 
+class ExcludeFileChecher:
+    "Проверяет не соответсвует ли файл или папка шаблону на исключение"
+    def __init__(self, excludes: str | Iterable[str]) -> None:
+        self.exlude_filter = PathSpec.from_lines("gitwildmatch",excludes)
+
+    def __call__(self, file: FileInfo ) -> bool:
+        file_path = str(Path(file.path, file.name+file.format))           
+        return not self.exlude_filter.match_file(file_path)
+    
+
+
 class DirectoryParser:
-    def __init__(self,base_path: Optional[Path] = None, checkers: Optional[Iterable[FileChecher]] = None) -> None:
+    def __init__(self,base_path: Optional[Path] = None, checkers: Optional[Iterable[FileChecherProto]] = None) -> None:
         self.checkers = checkers
         self.base_path = base_path.resolve() if base_path else None
-        self.graph = None
+        self.graph:Optional[GraphProto] = None
         
         
     def _split_dirs(self, rel_path: Path) -> tuple[DirectoryNode, ...]:
         return tuple(DirectoryNode(Path(part)) for part in rel_path.parts if part not in (".", ""))    
         
-    def __call__(self,graph: GraphX, context: Path) -> GraphX:
-        files:List[FileInfo] = self.parse_directory(context)
-        files:List[FileInfo] = self.apply_filters(files=files)
+    def __call__(self,graph: GraphProto, context: Path) -> GraphProto:
+        all_files:List[FileInfo] = self.parse_directory(context)
+        filtred_files:List[FileInfo] = self.apply_filters(files=all_files)
         self.graph = graph
         tree_map: dict[tuple[DirectoryNode, ...], list[FileInfo]] = {}
 
-        for f in files:
+        for f in filtred_files:
             rel_dir = self._rel(f.path)
             key = self._split_dirs(rel_dir)
             tree_map.setdefault(key, []).append(f)
@@ -141,10 +156,11 @@ class DirectoryParser:
 
 
             if parent_dir != current_dir:
-                self.graph.add_edge(parent_dir, current_dir)
+                self.graph.add_edge(parent_dir, current_dir, Relation.CONTAINS)
 
     
             for f in tree_map[key]:
+                
                 rel_file = self._rel(f.path / f"{f.name}{f.format}")
                 file_node = FileInfo(
                     name=f.name,
@@ -152,8 +168,9 @@ class DirectoryParser:
                     path=self._rel(f.path),
                     is_exclude=f.is_exclude,
                 )
+                
                 if rel_file != self._rel(f.path):
-                    self.graph.add_edge(current_dir, file_node)
+                    self.graph.add_edge(current_dir, file_node, Relation.CONTAINS)
 
         return self.graph
     
@@ -178,7 +195,7 @@ class DirectoryParser:
                 files.append(FileInfo(name=filename,format=format,path=dirName))
         return files
     
-    def _filter(self,filecker:FileChecher, files:List[FileInfo]) -> List[FileInfo]:
+    def _filter(self,filecker:FileChecherProto, files:List[FileInfo]) -> List[FileInfo]:
         return list(filter(filecker.__call__,files))
     
     def apply_filters(self,files: List[FileInfo]) -> List[FileInfo]:

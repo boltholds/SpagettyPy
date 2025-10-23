@@ -1,11 +1,10 @@
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from spagettypy.analyzer.parsers.directory_parser import (
-    GitFinder, GitignoreFileChecker, GitExcludeFileChecker,
+    GitignoreFileChecker, GitExcludeFileChecker,
     FormatFileChecker, DirectoryParser
 )
-from spagettypy.analyzer.model import FileInfo, DirectoryNode
+from spagettypy.analyzer.model import FileInfo
 from spagettypy.analyzer.graph.networkx_facade import GraphX
 
 # ────────────────────────────────

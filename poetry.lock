@@ -592,6 +592,21 @@ files = [
 ]
 
 [[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "typer"
 version = "0.20.0"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
@@ -624,4 +639,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "7e14b859f04b1529775b798384b997a3cf65a6dab8f83304adb33f459d07aa5d"
+content-hash = "efdbca9602549085a1889c6aa93f7d934709a9db43a73377cd18e0af91eff397"

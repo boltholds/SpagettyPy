@@ -1,14 +1,21 @@
 
-from typing import Protocol,Optional, Any, Iterable
-from ..graph import GraphX
+from typing import Protocol,Optional, Any, Iterable, TypeVar, Type
 from pathlib import Path
-from ..model import FileInfo
+from ..model import FileInfo,ClassInfo, ModuleInfo, FunctionInfo
+from ..graph import GraphProto
 
-class AnalyzerStage(Protocol):
-    def __call__(self, G: GraphX, context: Optional[Any] = None) -> GraphX: ...
+AstNodeType = ClassInfo | ModuleInfo | FunctionInfo
+T = TypeVar("T", bound=AstNodeType)
 
-class FileChecher(Protocol):
+class AnalyzerStageProto(Protocol):
+    def __call__(self, graph: GraphProto, context: Optional[Any] = None) -> GraphProto: ...
+
+class FileChecherProto(Protocol):
     def __call__(self, file: FileInfo) -> bool: ...
     
-class FileFinder(Protocol):
-    def __call__(self, propertry: str | Iterable[str]) -> Optional[Path]: ...
+class FileFinderProto(Protocol):
+    def __call__(self, prop: str) -> Optional[Path]: ...
+    
+class ASTNodeClassifierProto(Protocol[T]):
+    def __call__(self, prop: str | Iterable[str], node: T) -> T: ...
+
