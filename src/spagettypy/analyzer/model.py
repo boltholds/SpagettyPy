@@ -1,7 +1,7 @@
 from __future__ import annotations 
 from dataclasses import dataclass, field 
 from pathlib import Path 
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Literal
 from enum import StrEnum
 
 
@@ -17,6 +17,7 @@ class Relation(StrEnum):
     USES = "uses"
     FROM = "from"
     INHERIT = "inherit"
+    ATTRIBUTE = "attribute"
     
 
 class ClassType(StrEnum):
@@ -46,6 +47,16 @@ class FunctionType(StrEnum):
     CORUTINE = "corutine"
     ANONIME = "anonime"
 
+
+class AttributionType(StrEnum):
+    CONSTANT = "constant"
+    NAME = "name"
+    TUPLE = "tuple"
+    LIST = "list"
+    SET = "set"
+    DICT = "dict"
+    UNKNOWN = "unknown"
+
 @dataclass(slots=True, frozen=True) 
 class FileInfo:
     name: str
@@ -64,7 +75,10 @@ class CodeSpan:
     end_line: int
     start_col: int
     end_col: int
-    source: Optional[str] = None    
+    source: Optional[str] = None 
+    
+    def __repr__(self) -> str:
+        return f"{self.start_line}-{self.end_line}"   
 
 @dataclass(slots=True,kw_only=True)  
 class BaseData:     
@@ -92,10 +106,9 @@ class ModuleInfo(BaseData):
 @dataclass(slots=True, eq=False)
 class ClassInfo(BaseData):
     module: ModuleInfo
-    attributes: List[Any] = field(default_factory=list)
-    decorators: List[Any] = field(default_factory=list)
     type: ClassType = ClassType.NORMAL
-    
+    decorators: List[Any] = field(default_factory=list)
+
     @property
     def qualname(self) -> str:
         return f"{self.module}.{self.name}"
@@ -108,7 +121,6 @@ class ClassInfo(BaseData):
 @dataclass(slots=True, eq=False)
 class FunctionInfo(BaseData):
     module: ModuleInfo
-    owner: Optional[ModuleInfo | ClassInfo | FunctionInfo] = None 
     args_types: List[str] = field(default_factory=list) # из type hints
     return_type: Optional[str] = None
     decorators: List[Any] = field(default_factory=list)
@@ -119,9 +131,12 @@ class FunctionInfo(BaseData):
         return f"{self.owner}.{self.name}" if self.owner else f"{self.module}.{self.name}"
     
     def __repr__(self) -> str:
-        if self.owner:
-            return f'Method {self.name}'
         return f'Functions {self.name}'
         
     
-
+@dataclass(slots=True, eq=False)
+class AttributeInfo(BaseData):
+    annotation: str
+    value: Any
+    level:str = Literal["class","instance"]
+    type:AttributionType = AttributionType.UNKNOWN

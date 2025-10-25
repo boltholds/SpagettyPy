@@ -9,7 +9,7 @@ from ..model import FileInfo,DirectoryNode
 from tabulate import tabulate
 
 class TreeExporter:
-    def __init__(self,formatter:TreeFormatter,  root: str = "."):
+    def __init__(self,  root: str = "."):
         self.root = root
         self.tree: dict[str, list[Any]]  = defaultdict(list)
         self.visited:Set[str] = set()

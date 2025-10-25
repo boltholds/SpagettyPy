@@ -4,8 +4,8 @@ from pathlib import Path
 from ..analyzer.graph import GraphX
 from .commands import have
 
-__version__ = "0.1.0"
-app = typer.Typer(help=f"SpagettyPy — Python AST → UML visualizer {__version__}v")
+
+app = typer.Typer(help=f"SpagettyPy — Python AST → UML visualizer")
 app.add_typer(have.app, name="have", help="Работа с UML")
 app.add_typer(have.app, name="get")
 
@@ -15,7 +15,7 @@ def main(
     exclude: list[str] = typer.Option([], "--exclude", "-e"),
     gitignore: bool = typer.Option(False, "--gitignore"),
     only_python: bool = typer.Option(False, "--only_python"),
-    path: Path = typer.Option(".", help="Путь к проекту")
+    path: Path = typer.Option(".","--path", help="Путь к проекту")
 ):  
     base_path = path.resolve()
     checkers = []

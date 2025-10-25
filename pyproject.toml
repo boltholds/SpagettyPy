@@ -1,6 +1,6 @@
 [project]
 name = "spagettypy"
-version = "0.0.1"
+version = "0.2a"
 description = "SpagettyPy is Simple AST to UML visualizer"
 authors = [
     {name = "Bolt Hold",email = "bolthold7507@gmail.com"}

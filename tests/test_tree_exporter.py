@@ -1,4 +1,4 @@
-from spagettypy.analyzer.exporters.tree_exporter import TreeDirectoryExporter
+from spagettypy.analyzer.exporters.tree_exporter import TreeExporter
 from spagettypy.analyzer.graph.networkx_facade import GraphX
 
 def test_tree_exporter_builds_simple_tree(capsys):
@@ -6,7 +6,7 @@ def test_tree_exporter_builds_simple_tree(capsys):
     g.add_edge("root", "folder")
     g.add_edge("folder", "file.txt")
 
-    exporter = TreeDirectoryExporter(root="root")
+    exporter = TreeExporter(root="root")
     output = exporter(g)
     assert "file.txt" in output
     assert "folder" in output
@@ -16,7 +16,11 @@ def test_tree_exporter_skips_dot_nodes():
     g = GraphX[str, None]()
     g.add_edge(".", "ignored.txt")
 
-    exp = TreeDirectoryExporter()
+    exp = TreeExporter()
     out = exp(g)
+    # Проверяем, что файл попал в дерево
     assert "ignored.txt" in out
-    assert ".txt" not in out.splitlines()[0]
+
+    # Проверяем, что символ "." нигде не напечатан как отдельный узел
+    lines = [line.strip() for line in out.splitlines()]
+    assert not any(line.endswith(".") or line.strip() == "." for line in lines)

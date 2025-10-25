@@ -1,0 +1,45 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\bolthold\Documents\Code\SpagettyPy
+configfile: pytest.ini
+testpaths: tests
+plugins: cov-7.0.0
+collected 71 items
+
+tests\test_base_parsers.py .........                                     [ 12%]
+tests\test_cli_smoke.py ...                                              [ 16%]
+tests\test_directory_parser.py ....                                      [ 22%]
+tests\test_graph_filters.py .......                                      [ 32%]
+tests\test_graph_finders.py ........                                     [ 43%]
+tests\test_networkx_facade.py ........                                   [ 54%]
+tests\test_structure_analyzer.py ..............................          [ 97%]
+tests\test_tree_exporter.py ..                                           [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.7-final-0 _______________
+
+Name                                                    Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------
+src\spagettypy\__init__.py                                  0      0   100%
+src\spagettypy\analyzer\exporters\__init__.py               0      0   100%
+src\spagettypy\analyzer\exporters\interfaces.py             4      0   100%
+src\spagettypy\analyzer\exporters\mermaid_exporter.py      37     20    46%   14, 35-37, 40-63, 67-69, 73-75
+src\spagettypy\analyzer\exporters\tree_exporter.py        114     39    66%   33, 62, 97, 106-107, 110, 113-116, 122, 126, 132, 138-142, 146-168, 172-182
+src\spagettypy\analyzer\graph\__init__.py                   5      0   100%
+src\spagettypy\analyzer\graph\filters.py                   38      0   100%
+src\spagettypy\analyzer\graph\finders.py                   43      0   100%
+src\spagettypy\analyzer\graph\interfaces.py                 9      0   100%
+src\spagettypy\analyzer\graph\networkx_facade.py           59      1    98%   83
+src\spagettypy\analyzer\model.py                          107      7    93%   81, 93, 102, 114, 117, 131, 134
+src\spagettypy\analyzer\parsers\__init__.py                 0      0   100%
+src\spagettypy\analyzer\parsers\base.py                    99      0   100%
+src\spagettypy\analyzer\parsers\directory_parser.py       134     18    87%   18-19, 31-33, 39, 61-63, 71, 75, 110, 116, 119-120, 183-185
+src\spagettypy\analyzer\parsers\interfaces.py              10      0   100%
+src\spagettypy\analyzer\parsers\structure_analyzer.py     238     35    85%   51, 55, 98-105, 119, 123, 176-191, 197-198, 242, 246, 353, 358, 363, 380, 444-446
+src\spagettypy\ui\__init__.py                               0      0   100%
+src\spagettypy\ui\cli.py                                   22      0   100%
+src\spagettypy\ui\commands\__init__.py                      0      0   100%
+src\spagettypy\ui\commands\have.py                         39     14    64%   22-36, 44
+-------------------------------------------------------------------------------------
+TOTAL                                                     958    134    86%
+============================= 71 passed in 0.79s ==============================
